@@ -35,9 +35,10 @@ python -m pobots.cli export
 
 Se quiser gerar com IA + token do cliente:
 ```powershell
-$env:POBOTS_API_TOKEN="SEU_TOKEN"
-$env:PYTHONPATH=(Resolve-Path .\src).Path
-.\.venv\Scripts\python.exe -m pobots.cli ai-generate "Task do cliente"
+.\run-ai.ps1 -Task "Task do cliente" -Token "SEU_TOKEN"
+```
+```bash
+bash ./run-ai.sh "Task do cliente" "SEU_TOKEN"
 ```
 
 ## 6) Usar resultado

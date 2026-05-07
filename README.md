@@ -87,6 +87,15 @@ python -m pobots.cli doctor
 ```
 
 ### 6) Pipeline com IA + token do cliente
+Forma mais simples (comando unico):
+```powershell
+.\run-ai.ps1 -Task "Task do cliente: criar fluxo de cadastro e agendamento" -Token "SEU_TOKEN_AQUI"
+```
+```bash
+bash ./run-ai.sh "Task do cliente: criar fluxo de cadastro e agendamento" "SEU_TOKEN_AQUI"
+```
+
+Forma manual:
 ```powershell
 $env:POBOTS_API_TOKEN="SEU_TOKEN_AQUI"
 .\.venv\Scripts\python.exe -m pobots.cli ai-generate "Task do cliente: criar fluxo de cadastro e agendamento"
@@ -103,6 +112,10 @@ Esse comando executa o fluxo:
 - IA combina a task com nossos prompts oficiais;
 - IA gera `project.yaml`;
 - sistema gera DVP-E, DVS, DRP, DAT, GDR e backlog completo.
+
+Atalhos:
+- `run-ai.ps1` usa modo interativo por padrao; adicione `-AutoDecide` para IA decidir respostas vazias.
+- `run-ai.sh` usa modo interativo por padrao; para auto decide use `export POBOTS_INTERACTIVE_FLAG=--auto-decide`.
 
 ---
 
