@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "po-bots-documentacao"
+version = "1.0.0"
+description = "CLI para gerar documentacao e cards prontos (copy/paste) no modo manual assistido por IA."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "PO Bots Team" }
+]
+dependencies = [
+  "typer>=0.12.3",
+  "PyYAML>=6.0.1",
+  "pydantic>=2.8.2"
+]
+
+[project.scripts]
+pobots = "pobots.cli:app"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,40 @@
+project:
+  name: Projeto Exemplo
+  objective: Transformar requisitos em backlog claro com checklist e Gherkin por RF.
+  audience: Time de produto e tecnologia
+  deadline: "2026-12-31"
+  stack:
+    - Python
+    - FastAPI
+    - React
+  constraints:
+    - Sem envio automatico para Trello/Jira.
+    - Cards devem ser completos para copiar e colar.
+  assumptions:
+    - Equipe trabalha com sprint quinzenal.
+    - Projeto possui revisao de QA antes de Done.
+
+functional_requirements:
+  - id: RF001
+    title: Cadastro de cliente
+    description: Permitir cadastro de cliente com validacoes por campo.
+    business_rules:
+      - Nome e obrigatorio.
+      - Telefone deve aceitar apenas numeros validos.
+      - Email deve ser unico no sistema.
+    acceptance_criteria:
+      - Cadastrar cliente com dados validos.
+      - Bloquear cadastro com email duplicado.
+      - Exibir mensagem clara em validacao de campo.
+    out_of_scope:
+      - Importacao em lote de clientes.
+    priority: M
+    labels:
+      - backend
+      - frontend
+      - qa
+
+non_functional_requirements:
+  - id: RNF001
+    title: Observabilidade
+    description: Registrar logs de erro e eventos criticos para auditoria.

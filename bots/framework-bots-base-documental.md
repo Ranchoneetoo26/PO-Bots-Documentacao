@@ -1,92 +1,65 @@
-# Framework de Bots Baseado em Documentação (Universal)
+# Framework de Bots Baseado em Documentacao (Universal)
 
 ## 1) Objetivo
-Criar um sistema de bots interligados que transforma entrada de projeto em documentação executável, rastreável e pronta para backlog, usando a lógica estrutural de:
-- `DVP-E` (visão, problema, valor, stakeholders, escopo);
-- `DVS` (viabilidade técnica/econômica/operacional/legal/cronograma/humana, riscos, Go/No-Go);
-- `DRP` (RF, RN, RNF, dados, regras de negócio, critérios de aceite);
-- `DAT` (arquitetura técnica, módulos, dados, segurança, observabilidade, deploy);
-- `GDR` (rastreabilidade, governança de mudança, homologação e gates).
+Criar um sistema de bots que transforma entrada de projeto em documentacao executavel, rastreavel e pronta para backlog, com automacao local em Python e operacao manual no Trello/Jira.
 
-Este framework é universal: pode ser aplicado em qualquer domínio.
+Base estrutural obrigatoria:
+- `DVP-E` (visao, problema, valor, stakeholders, escopo);
+- `DVS` (viabilidade e riscos com decisao Go/No-Go);
+- `DRP` (RF, RN, RNF, regras e criterios de aceite);
+- `DAT` (arquitetura tecnica, dados, seguranca, operacao);
+- `GDR` (rastreabilidade, homologacao e gates).
 
----
-
-## 2) Mapa de conhecimento por documento (o que os bots devem aprender)
-## DVP-E (Estratégia e Produto)
-- Problema e impacto de negócio;
-- visão e objetivos do produto;
-- stakeholders e perfis de usuário;
-- escopo MoSCoW (Must/Should/Could/Won't);
-- critérios de sucesso e riscos de negócio.
-
-## DVS (Viabilidade)
-- viabilidade técnica, operacional, econômica, legal, cronograma e humana;
-- matriz de riscos e mitigação;
-- critérios de decisão Go/No-Go.
-
-## DRP (Requisitos)
-- catálogo RF/RN/RNF;
-- regras de negócio executáveis;
-- requisitos de dados e validações;
-- critérios de aceite testáveis;
-- fluxos principais e fora de escopo.
-
-## DAT (Arquitetura)
-- drivers e restrições técnicas;
-- visão de módulos e componentes;
-- modelo de dados, consistência e transações;
-- segurança e controle de acesso;
-- observabilidade, deploy e operação.
-
-## GDR (Governança e Rastreabilidade)
-- trilha: problema -> requisito -> regra -> CA -> solução técnica;
-- política de mudança (CR);
-- checklist de homologação;
-- gates de aprovação documental e funcional.
+Regra fixa do produto:
+- Sem envio automatico para Trello/Jira.
+- O sistema gera cards completos para copiar e colar.
 
 ---
 
-## 3) Bots e papéis do início ao fim
-## BOT_CEO (Estratégia)
-- Dono do valor de negócio e prioridade.
-- Decide escopo e corte de fase.
-- Bloqueia itens sem impacto/ROI claro.
+## 2) Camadas da plataforma
+1. **Camada de entrada**
+   - arquivo `project.yaml` com contexto do cliente e RF/RNF.
+2. **Camada de orquestracao**
+   - CLI Python (`pobots`) executa fases de geracao, validacao e exportacao.
+3. **Camada de qualidade**
+   - score por card (0-100), status `OK | PENDENTE | BLOQUEADO`.
+4. **Camada de entrega**
+   - arquivos finais em `dist/` para uso imediato.
+
+---
+
+## 3) Bots e papeis do inicio ao fim
+## BOT_CEO (Estrategia)
+- Valida valor de negocio, prioridade e ROI.
+- Bloqueia card sem impacto claro.
 
 ## BOT_ANALISTA (Requisito)
-- Converte necessidade em requisito executável.
-- Remove ambiguidades.
-- Gera critérios Gherkin e DoD.
+- Remove ambiguidade.
+- Gera RF executavel com checklist e Gherkin.
 
-## BOT_ARQUITETO (Solução)
-- Define arquitetura e impactos.
-- Garante aderência técnica e escalabilidade.
-- Bloqueia inconsistência entre requisito e solução.
+## BOT_ARQUITETO (Solucao)
+- Valida aderencia tecnica e escalabilidade.
+- Bloqueia conflito requisito vs arquitetura.
 
-## BOT_DEV_BACK (Execução Backend)
-- Especifica APIs, domínio, validações, dados e logs.
-- Gera checklist técnico backend.
+## BOT_DEV_BACK (Execucao Backend)
+- Especifica API, dominio, validacoes, dados e logs.
 
-## BOT_DEV_FRONT (Execução Frontend)
-- Especifica fluxos de tela, validações por campo, estados de UI e integração.
-- Gera checklist técnico frontend.
+## BOT_DEV_FRONT (Execucao Frontend)
+- Especifica tela, estados, validacoes por campo e integracao.
 
 ## BOT_QA (Qualidade)
-- Define estratégia de testes e cobertura mínima.
-- Bloqueia sem evidência de teste.
+- Define cobertura minima e evidencias obrigatorias.
 
-## BOT_COMPLIANCE (Segurança e Conformidade)
-- Valida privacidade, trilha de auditoria, controle de acesso e políticas.
-- Bloqueia violações de conformidade.
+## BOT_COMPLIANCE (Seguranca e Conformidade)
+- Garante privacidade, auditoria e controle de acesso.
 
 ## BOT_PM (Planejamento e Entrega)
-- Planeja sprint, dependências, marcos, capacidade e métricas.
-- Mantém previsibilidade e execução.
+- Organiza dependencias, sprint, risco e previsibilidade.
 
 ---
 
-## 4) Protocolo de colaboração entre bots
-Ordem de execução obrigatória:
+## 4) Fluxo de execucao (automatizado local)
+Ordem:
 1. BOT_ANALISTA
 2. BOT_ARQUITETO
 3. BOT_CEO
@@ -96,39 +69,42 @@ Ordem de execução obrigatória:
 7. BOT_COMPLIANCE
 8. BOT_PM
 
-Regra:
-- qualquer `BLOQUEADO` interrompe o fluxo;
-- `PENDENTE` volta para o bot da etapa com plano de ajuste;
-- somente todos `OK` permite avançar para “pronto para execução”.
+Regra de gate:
+- `BLOQUEADO`: interrompe fluxo e gera ajustes necessarios.
+- `PENDENTE`: volta para etapa anterior com plano de correcao.
+- `OK`: segue para etapa seguinte.
 
 ---
 
-## 5) Entregáveis obrigatórios por ciclo
+## 5) Entregaveis obrigatorios por ciclo
 1. Documento mestre consolidado.
-2. Catálogo RF/RNF completo.
-3. Arquitetura lógica/técnica.
-4. Contratos de API (quando aplicável).
-5. Modelo de dados inicial (quando aplicável).
-6. Plano de testes + matriz de cobertura.
-7. Backlog pronto para Trello/Jira.
-8. Critérios Gherkin para todos os itens.
-9. Checklist operacional e governança.
-10. Plano de métricas de sprint e qualidade.
+2. Catalogo RF/RNF.
+3. Cards prontos para copiar e colar no Trello/Jira.
+4. Checklist tecnico por RF.
+5. Checklist QA por RF.
+6. Criterios Gherkin por RF.
+7. Relatorio de qualidade com score.
+8. Exportacao CSV/TXT para operacao manual.
 
 ---
 
-## 6) Auto-melhoria contínua (aprendizado entre projetos)
-Ao final de cada projeto/sprint registrar:
+## 6) Modo de uso recomendado
+1. Clonar repositorio.
+2. Rodar `pobots init`.
+3. Preencher `project.yaml`.
+4. Rodar `pobots generate`.
+5. Rodar `pobots validate`.
+6. Rodar `pobots export`.
+7. Copiar/colar cards no Trello/Jira.
+
+---
+
+## 7) Auto-melhoria continua
+Ao final de cada sprint, registrar:
 - ambiguidades recorrentes;
-- erros de estimativa;
-- falhas de cobertura de teste;
-- decisões arquiteturais que funcionaram;
-- pontos de conformidade críticos.
+- retrabalho;
+- bugs pos-entrega;
+- estimativas ruins;
+- padroes que funcionaram.
 
-Aplicar no próximo projeto:
-- biblioteca de padrões aprovados;
-- catálogo de riscos recorrentes;
-- templates com melhoria incremental.
-
-Regra de ouro:
-- melhorar continuamente sem quebrar rastreabilidade, clareza e segurança.
+Aplicar no ciclo seguinte para elevar qualidade sem perder rastreabilidade.

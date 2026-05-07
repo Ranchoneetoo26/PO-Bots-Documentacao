@@ -113,3 +113,5 @@ Saída:
 - Em conflito documental: retornar `BLOQUEADO`.
 - Toda recomendação deve citar evidência documental.
 - Sem evidência = sem aprovação.
+- Sem envio automatico para Trello/Jira: gerar somente cards para copia/cola.
+- Incluir score de qualidade estimado por card (0-100) no resumo final.

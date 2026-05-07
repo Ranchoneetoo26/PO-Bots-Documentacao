@@ -19,6 +19,13 @@
 Formato:
 `[BOT:<nome>] [STATUS:<status>] <resumo> | Ações: <acoes_recomendadas>`
 
+## Score de qualidade por card
+- Cada card deve receber score de 0 a 100 antes de ir para `Ready`.
+- Regra de aprovacao:
+  - `>= 85`: OK
+  - `70-84`: PENDENTE
+  - `< 70`: BLOQUEADO
+
 ## Critérios de bloqueio cruzado
 - CEO pode bloquear por desalinhamento de valor.
 - Arquiteto pode bloquear por risco técnico estrutural.
@@ -34,6 +41,7 @@ Somente quando todos os itens estiverem `OK`:
 - Checklist QA.
 - Evidência documental citada.
 - Campos de governança definidos no texto do card (para copiar/colar no board).
+- Score de qualidade aprovado (`>= 85`).
 
 ## Definição de card pronto para Done
 - Código aprovado.
