@@ -1,112 +1,224 @@
-# PO-Bots-Documentacao
+﻿# PO-Bots-Documentacao
 
-Framework de bots de IA para criação e governança de documentação de projetos de software, com rastreabilidade ponta a ponta e **modo manual de operação**.
+Framework de bots de IA para criar documentacao de projeto de forma profissional, com foco em:
+- clareza total;
+- rastreabilidade;
+- padrao executivo;
+- cards prontos para copiar e colar no Trello/Jira.
 
-## O que este repositório entrega
-- Arquitetura de bots por papéis (CEO, Analista, Arquiteto, Dev Back, Dev Front, QA, Compliance, PM).
-- Prompt mestre universal para qualquer projeto.
-- Protocolo de handoff e regras de gate entre bots.
-- Geração de cards completos prontos para copiar e colar no Trello/Jira.
-- Guia para evolução futura para automação (opcional).
-- Auditoria de alinhamento com base metodológica documental.
+## Importante (estado atual)
+Hoje o projeto esta em **modo manual assistido por IA**:
+- os bots **geram** toda a documentacao e os cards completos;
+- voce **copia e cola** no Trello/Jira;
+- nao existe integracao automatica ativa com Trello neste momento.
 
-## Estrutura
+---
+
+## O que voce encontra neste repositorio
 - `bots/framework-bots-base-documental.md`  
-  Base metodológica (DVP-E, DVS, DRP, DAT, GDR).
+  Base metodologica (logica de DVP-E, DVS, DRP, DAT, GDR).
+
 - `bots/prompts/prompt-mestre-bots-universal-v2.md`  
-  Prompt principal para iniciar qualquer projeto.
+  Prompt principal para rodar os bots em qualquer projeto.
+
 - `bots/prompts/prompt-pack-bots.md`  
-  Prompts por papel.
+  Prompt por papel (CEO, Analista, Arquiteto, Dev Back, Dev Front, QA, Compliance, PM).
+
 - `bots/protocolo-handoff-bots.md`  
-  Ordem, gates e bloqueios.
-- `n8n-workflow-po-bots-orchestrator.json`  
-  Referência técnica para automação futura (não obrigatório no modo atual).
-- `trello-butler-regras-prontas.md`  
-  Referência técnica para automação futura (não obrigatório no modo atual).
-- `automacao-bots-trello-playbook.md`  
-  Guia operacional completo.
+  Ordem de trabalho entre bots, gates e bloqueios.
+
+- `bots/aprendizado-continuo-ia.md`  
+  Como os bots melhoram entre projetos (memoria e licoes aprendidas).
+
 - `analise-alinhamento-e-divergencia.md`  
-  Verificação de consistência.
+  Auditoria de alinhamento com a base documental.
 
-## Plataformas recomendadas (modo atual)
-- **Editor:** VSCode
-- **Board:** Trello/Jira (uso manual)
-- **IA:** OpenAI API (ou equivalente)
-- **Memória de aprendizado:** Notion/Google Sheets/Markdown versionado (recomendado)
+- `publish-to-github.ps1`  
+  Script utilitario para publicar no GitHub.
 
-## Pré-requisitos (modo atual)
-1. Board Trello/Jira criado.
-2. Chave de API de IA (ou uso manual em Chat/LLM).
-3. Templates de card e checklists deste repositório.
+---
 
-## Instalação e uso (passo a passo - modo manual)
-## 1) Preparar board
-1. Criar listas:
-   - `Backlog Sprint`, `Refino`, `Ready`, `In Progress`, `Code Review`, `QA`, `Done`, `Blocked`.
-2. Criar campos customizados:
-   - `RF`, `Sprint`, `Tipo`, `Pontos`, `Doc Alinhada`, `Critérios Aceite`, `QA Gate`.
-3. Criar labels padrão:
-   - `BACKEND`, `FRONTEND`, `QA`, `DOC-ALINHADO`, `BLOQUEADO`, `PRONTO-PARA-CODE`, `PRONTO-PARA-QA`.
-4. Criar template de card com:
-   - descrição técnica;
-   - checklist técnico;
-   - checklist QA;
-   - critérios de aceite Gherkin.
+## Para quem e este repositório
+Este material foi feito para:
+- Product Owner / PM;
+- Analista;
+- Arquiteto;
+- QA;
+- Dev Back e Dev Front;
+- qualquer pessoa que precise transformar ideia em documentacao executavel.
 
-## 2) Executar bots (manual)
-1. Use `bots/prompts/prompt-mestre-bots-universal-v2.md`.
-2. Forneça contexto do projeto ao orquestrador.
-3. Deixe os bots gerarem:
-   - documentação completa;
-   - backlog por RF;
-   - cards completos para cópia/cola.
-4. Copie e cole os cards no Trello/Jira.
+Mesmo quem tem pouca experiencia tecnica consegue usar, seguindo os passos abaixo.
 
-## 3) Fluxo operacional manual
-1. Rodar bots para gerar lote de cards da sprint.
-2. Revisar e aprovar cards internamente.
-3. Colar cards no board.
-4. Executar sprint com acompanhamento por métricas.
+---
 
-## 4) Rodar em qualquer projeto
-1. Use o prompt: `bots/prompts/prompt-mestre-bots-universal-v2.md`.
-2. Forneça contexto mínimo do projeto.
-3. Orquestrador executa bots e gera documentação completa.
-4. Converter saída em backlog manual (cópia/cola) no Trello/Jira.
+## Requisitos minimos
+Voce precisa de:
+1. Uma conta no ChatGPT (ou outra IA compativel com prompts longos).
+2. Um board no Trello ou projeto no Jira.
+3. VSCode (opcional, para editar arquivos com mais conforto).
 
-## Aprendizado contínuo (IA nunca para de evoluir)
-Este framework inclui melhoria contínua obrigatória:
-- Ao fim de cada sprint/projeto registrar:
-  - ambiguidades encontradas;
-  - erros de estimativa;
-  - gaps de teste;
-  - padrões que funcionaram.
-- Alimentar uma base de memória (recomendado `PostgreSQL` ou `Notion`).
-- Injetar essa memória no contexto do prompt em cada nova execução.
-- Revisar prompts mensalmente e atualizar “biblioteca de padrões aprovados”.
+---
 
-### Ciclo de evolução recomendado
-1. Coleta de feedback (retro/sprint).
-2. Classificação de lições aprendidas.
-3. Atualização de prompts e gates.
-4. Revalidação com card piloto.
-5. Publicação da versão nova do framework.
+## Guia rapido (5 minutos)
+1. Abra o arquivo `bots/prompts/prompt-mestre-bots-universal-v2.md`.
+2. Copie todo o conteudo.
+3. Abra o ChatGPT.
+4. Cole o prompt.
+5. Envie uma mensagem com o contexto do seu novo projeto.
+6. Receba a documentacao + cards prontos.
+7. Copie e cole os cards no Trello/Jira.
 
-## Governança e qualidade
-- Sem evidência documental = sem aprovação.
-- Qualquer bot pode `BLOQUEAR` por risco crítico.
-- Apenas status `OK` em todos os bots libera card para desenvolvimento.
-- `QA Gate` obrigatório antes de `Done` (mesmo no modo manual).
+---
 
-## Segurança e conformidade
-- Não gravar segredos em cards/comentários.
-- Registrar aprovação manual por etapa (quem aprovou, quando e por quê).
+## Passo a passo detalhado (para leigo)
 
-## Roadmap sugerido
-1. v1: operação manual assistida por IA (atual).
-2. v2: memória persistente e scoring de qualidade.
-3. v3: semiautomação de geração de cards.
-4. v4: automação completa com Trello/n8n (futuro).
+### Etapa 1 - Abrir o prompt certo
+1. Abra a pasta do projeto no seu computador.
+2. Entre em `bots` -> `prompts`.
+3. Clique em `prompt-mestre-bots-universal-v2.md`.
+4. Selecione tudo (`Ctrl + A`) e copie (`Ctrl + C`).
 
-## Licença
-Defina conforme sua política (MIT/privada).
+### Etapa 2 - Rodar no ChatGPT
+1. Abra o ChatGPT no navegador.
+2. Clique em `Novo chat`.
+3. Cole o prompt inteiro (`Ctrl + V`).
+4. No final, adicione seu contexto de projeto, por exemplo:
+   - nome do projeto;
+   - objetivo;
+   - publico-alvo;
+   - prazo;
+   - stack desejada.
+5. Clique em `Enviar`.
+
+### Etapa 3 - Receber a saida correta
+A IA deve entregar:
+- documento mestre;
+- RF e RNF;
+- arquitetura;
+- checklists;
+- criterios Gherkin;
+- cards completos para Trello/Jira.
+
+Se vier incompleto, responda:
+`Refaça no formato completo com checklist tecnico, checklist QA e Gherkin para cada RF.`
+
+### Etapa 4 - Levar para Trello/Jira (manual)
+1. Abra seu Trello.
+2. Entre no board da sprint.
+3. Clique em `Adicionar card`.
+4. Cole o titulo e a descricao completa do card gerado.
+5. Repita para todos os cards.
+6. Adicione labels e responsavel.
+
+Sugestao de listas no Trello:
+- Backlog
+- Refino
+- Ready
+- In Progress
+- Code Review
+- QA
+- Done
+- Blocked
+
+### Etapa 5 - Garantir qualidade antes de executar
+Antes de comecar a sprint, verifique se cada card tem:
+- objetivo;
+- escopo e fora de escopo;
+- regras executaveis;
+- checklist tecnico;
+- checklist QA;
+- criterios de aceite (Gherkin).
+
+Se faltar qualquer item, volte ao bot e peça complemento.
+
+---
+
+## Como os bots trabalham juntos
+Ordem oficial:
+1. Analista
+2. Arquiteto
+3. CEO
+4. Dev Back
+5. Dev Front
+6. QA
+7. Compliance
+8. PM
+
+Regra de gate:
+- `OK`: segue.
+- `PENDENTE`: corrige e roda de novo.
+- `BLOQUEADO`: para tudo, corrige causa raiz.
+
+Detalhes em: `bots/protocolo-handoff-bots.md`.
+
+---
+
+## Modelo de comando para iniciar qualquer projeto
+Use este texto apos colar o prompt mestre:
+
+```txt
+Projeto: [nome]
+Objetivo: [objetivo]
+Publico: [publico-alvo]
+Prazo: [prazo]
+Stack: [stack desejada]
+Restricoes: [restricoes]
+
+Execute Fase 1 a 5 e entregue:
+- Documento mestre completo
+- RF/RNF completos
+- Checklist tecnico + QA
+- Gherkin por RF
+- Cards completos para copiar e colar no Trello
+```
+
+---
+
+## Aprendizado continuo (melhoria constante)
+Para os bots evoluirem com o tempo:
+1. Ao fim de cada sprint, registre:
+   - ambiguidades;
+   - retrabalho;
+   - bugs;
+   - estimativas ruins;
+   - decisoes que funcionaram.
+2. Salve isso em um arquivo ou Notion.
+3. Na proxima execucao, cole essas licoes no contexto inicial.
+
+Guia completo: `bots/aprendizado-continuo-ia.md`.
+
+---
+
+## O que NAO fazer
+- Nao usar card sem Gherkin.
+- Nao usar card com frase vaga.
+- Nao aprovar card sem checklist QA.
+- Nao mudar regra sem atualizar rastreabilidade.
+
+---
+
+## Checklist final de uso
+- [ ] Prompt mestre copiado
+- [ ] Contexto do projeto enviado
+- [ ] Saida completa recebida
+- [ ] Cards colados no Trello/Jira
+- [ ] Checklists e Gherkin revisados
+- [ ] Sprint iniciada com cards claros
+
+---
+
+## Publicar atualizacao no GitHub
+Se voce alterar qualquer arquivo e quiser subir:
+
+```powershell
+cd "c:\Users\Antonio\Desktop\Projeto-CarWash\PO-Bots-Documentacao"
+git add .
+git commit -m "docs: atualiza modo manual e guia passo a passo"
+git push
+```
+
+---
+
+## Suporte de uso
+Se um bot estiver gerando saida fraca, rode novamente com este reforco:
+`Responda com nivel senior, sem ambiguidade, checklist tecnico + QA + criterios Gherkin por RF.`

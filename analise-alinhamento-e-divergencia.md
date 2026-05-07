@@ -13,7 +13,6 @@ Artefatos auditados:
 - `bots/prompts/prompt-pack-bots.md`
 - `bots/prompts/prompt-mestre-bots-universal-v2.md`
 - `bots/protocolo-handoff-bots.md`
-- `n8n-workflow-po-bots-orchestrator.json`
 
 ## Resultado consolidado
 **Status geral:** Alinhado, com extensões controladas.
@@ -45,9 +44,9 @@ Essas extensões não conflitam com os documentos-base; ampliam governança e ex
 1. Em cada projeto novo, definir explicitamente:
    - critérios de bloqueio de severidade (ex.: compliance e QA);
    - metas de sprint (comprometido/entregue, carry-over, cycle time).
-2. No n8n, persistir histórico de decisão dos bots para auditoria contínua.
+2. Registrar histórico de decisão dos bots em repositório de conhecimento (arquivo, wiki ou Notion) para auditoria contínua.
 3. Revisão trimestral dos prompts para evolução sem perder aderência metodológica.
 
 ## Conclusão
 A solução está apta para uso como framework universal de bots documentais.
-Está coerente com a lógica dos documentos DVP-E, DVS, DRP, DAT e GDR e pronta para automação.
+Está coerente com a lógica dos documentos DVP-E, DVS, DRP, DAT e GDR e pronta para operação manual assistida por IA.
