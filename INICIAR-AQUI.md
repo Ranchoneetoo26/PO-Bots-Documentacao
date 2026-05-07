@@ -51,6 +51,7 @@ Arquivos gerados em uma pasta nova por execucao:
 - `dist/gerado-<projeto>-<timestamp>/05-gdr/gdr.md`
 - `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-trello.md`
 - `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-copy-paste.txt`
+- `dist/gerado-<projeto>-<timestamp>/audit-log.json`
 
 Agora e so copiar e colar os cards no Trello/Jira.
 

@@ -12,6 +12,8 @@ import typer
 from .exporter import export_cards_copy_paste, export_cards_csv
 from .generator import generate_artifacts
 from .io_utils import read_yaml, write_text, write_yaml
+from .memory_store import MemoryLesson, add_lessons, ensure_memory_db, fetch_relevant_lessons, record_run
+from .multi_bot import run_multi_bot_handoff
 from .validator import save_validation_report, validate_cards_from_payload
 
 
@@ -75,6 +77,18 @@ def _load_prompt_bundle(repo_root: Path) -> str:
         if file.exists():
             chunks.append(f"# ARQUIVO: {file.name}\n\n{file.read_text(encoding='utf-8')}")
     return "\n\n".join(chunks)
+
+
+def _llm_call_adapter(*, token: str, model: str, api_base_url: str):
+    def _call(*, messages: List[dict[str, str]]) -> str:
+        return _chat_completion(
+            token=token,
+            model=model,
+            messages=messages,
+            api_base_url=api_base_url,
+        )
+
+    return _call
 
 
 def _generate_questions(
@@ -209,7 +223,15 @@ def run_ai_pipeline(
     project_file: Path,
     dist_dir: Path,
 ) -> Path:
+    memory_db = repo_root / "memory" / "bots_memory.db"
+    ensure_memory_db(memory_db)
+    lessons = fetch_relevant_lessons(memory_db, task=task, limit=5)
+    memory_notes = [f"{item.category}: {item.solution} (resultado: {item.result})" for item in lessons]
+
     prompt_bundle = _load_prompt_bundle(repo_root)
+    if memory_notes:
+        prompt_bundle += "\n\n# MEMORIA OPERACIONAL\n" + "\n".join([f"- {note}" for note in memory_notes])
+
     questions = _generate_questions(
         token=token,
         model=model,
@@ -241,10 +263,19 @@ def run_ai_pipeline(
         for question in unresolved:
             answers[question] = auto_answers.get(question, "Hipotese padrao aplicada pela IA.")
 
+    llm_call = _llm_call_adapter(token=token, model=model, api_base_url=api_base_url)
+    bot_outputs, refined_task = run_multi_bot_handoff(
+        task=task,
+        qa_pairs=answers,
+        memory_notes=memory_notes,
+        prompt_bundle=prompt_bundle,
+        llm_call=llm_call,
+    )
+
     project_payload = _build_project_yaml(
         token=token,
         model=model,
-        task=task,
+        task=refined_task,
         prompt_bundle=prompt_bundle,
         qa_pairs=answers,
         api_base_url=api_base_url,
@@ -266,5 +297,44 @@ def run_ai_pipeline(
     else:
         qa_md.append("- Nenhuma pergunta adicional necessaria.")
     write_text(run_dir / "qa-detalhamento-ia.md", "\n".join(qa_md))
+
+    audit_payload = {
+        "run": run_dir.name,
+        "task_original": task,
+        "task_refinada": refined_task,
+        "questions": questions,
+        "answers": answers,
+        "bot_outputs": bot_outputs,
+        "memory_used": memory_notes,
+        "global_score": summary.global_score,
+    }
+    write_text(run_dir / "audit-log.json", json.dumps(audit_payload, ensure_ascii=False, indent=2))
+
+    derived_lessons = []
+    for item in bot_outputs:
+        if item["acoes_recomendadas"]:
+            derived_lessons.append(
+                MemoryLesson(
+                    category=item["bot"],
+                    problem=item["resumo"],
+                    solution="; ".join(item["acoes_recomendadas"]),
+                    result=f"status={item['status']}",
+                    confidence=0.75 if item["status"] == "OK" else 0.6,
+                )
+            )
+    if derived_lessons:
+        add_lessons(
+            memory_db,
+            project=project_payload.get("project", {}).get("name", "projeto"),
+            sprint=run_dir.name,
+            lessons=derived_lessons,
+        )
+    record_run(
+        memory_db,
+        run_name=run_dir.name,
+        project=project_payload.get("project", {}).get("name", "projeto"),
+        task=task,
+        score=summary.global_score,
+    )
 
     return run_dir

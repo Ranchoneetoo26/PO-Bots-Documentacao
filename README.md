@@ -10,6 +10,7 @@ Ele gera cards completos para **copiar e colar**.
 Ao rodar a CLI, voce recebe:
 - documento mestre;
 - documentos separados por bloco (`dvp-e`, `dvs`, `drp`, `dat`, `gdr`);
+- handoff multi-bot com papeis (`Analista`, `Arquiteto`, `CEO`, `Dev Back`, `Dev Front`, `QA`);
 - cards detalhados por RF;
 - checklist tecnico e QA por card;
 - criterios Gherkin por card;
@@ -109,9 +110,12 @@ Esse comando executa o fluxo:
 - cliente informa task;
 - IA faz perguntas de detalhamento;
 - cliente responde (ou deixa IA decidir);
+- IA executa handoff entre bots especializados;
 - IA combina a task com nossos prompts oficiais;
 - IA gera `project.yaml`;
-- sistema gera DVP-E, DVS, DRP, DAT, GDR e backlog completo.
+- sistema gera DVP-E, DVS, DRP, DAT, GDR e backlog completo;
+- registra `audit-log.json` por execucao;
+- reaproveita memoria operacional em `memory/bots_memory.db`.
 
 Atalhos:
 - `run-ai.ps1` usa modo interativo por padrao; adicione `-AutoDecide` para IA decidir respostas vazias.
@@ -156,6 +160,7 @@ Quanto melhor o `project.yaml`, melhor a qualidade final dos cards.
 - `dist/gerado-<projeto>-<timestamp>/06-backlog/qualidade-validacao.md`
 - `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-trello.csv`
 - `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-copy-paste.txt`
+- `dist/gerado-<projeto>-<timestamp>/audit-log.json`
 
 ## Como usar no Trello/Jira
 1. Abra seu board.

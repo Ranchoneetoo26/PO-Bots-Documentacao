@@ -6,3 +6,4 @@ dist/
 project.yaml
 *.egg-info/
 project.ai.tmp.yaml
+memory/
