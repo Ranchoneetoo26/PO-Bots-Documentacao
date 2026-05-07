@@ -7,7 +7,7 @@ import typer
 
 from .exporter import export_cards_copy_paste, export_cards_csv
 from .generator import generate_artifacts
-from .io_utils import ensure_dir, read_yaml, write_yaml
+from .io_utils import ensure_dir, write_yaml
 from .validator import save_validation_report, validate_cards_from_payload
 
 app = typer.Typer(help="PO Bots CLI - geracao de documentacao e cards em modo manual.")
