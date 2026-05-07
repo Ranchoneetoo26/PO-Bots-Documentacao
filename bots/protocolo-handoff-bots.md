@@ -12,10 +12,10 @@
 
 ## Regra de avanço
 - Só avança para o próximo bot se `status=OK`.
-- Se `PENDENTE`, o orquestrador ajusta card e reenfileira no mesmo bot.
-- Se `BLOQUEADO`, card vai para lista `Blocked` com comentário obrigatório.
+- Se `PENDENTE`, o orquestrador ajusta conteúdo e reenfileira no mesmo bot.
+- Se `BLOQUEADO`, interromper e entregar bloco `Ajustes Necessários` para correção manual.
 
-## Comentário obrigatório no Trello por etapa
+## Registro obrigatório por etapa (modo manual)
 Formato:
 `[BOT:<nome>] [STATUS:<status>] <resumo> | Ações: <acoes_recomendadas>`
 
@@ -33,7 +33,7 @@ Somente quando todos os itens estiverem `OK`:
 - Checklist técnico.
 - Checklist QA.
 - Evidência documental citada.
-- Labels e campos de governança preenchidos.
+- Campos de governança definidos no texto do card (para copiar/colar no board).
 
 ## Definição de card pronto para Done
 - Código aprovado.

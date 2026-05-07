@@ -1,4 +1,4 @@
-# Automação de Sprints com Bots Integrados (Trello)
+# Operação de Sprints com Bots Integrados (Modo Manual + Evolução para Automação)
 
 ## 1) O que este modelo resolve
 Este modelo cria um sistema de acompanhamento e execução de sprint com bots especializados que:
@@ -7,7 +7,16 @@ Este modelo cria um sistema de acompanhamento e execução de sprint com bots es
 - bloqueiam avanço quando qualidade/aceite não estão completos;
 - mantêm rastreabilidade entre requisito, card, código, teste e evidência.
 
-## 2) Arquitetura recomendada (simples e escalável)
+## 2) Arquitetura recomendada (estado atual e futuro)
+## Estado atual (ativo)
+- Bots geram documentação e cards completos em texto.
+- Time copia e cola no Trello/Jira manualmente.
+- Gates e validações são aplicados no conteúdo antes da execução.
+
+## Futuro (opcional)
+Automação completa com Trello + n8n.
+
+## Arquitetura futura (simples e escalável)
 ## Camada A - Trello (fonte de verdade do fluxo)
 - Board de sprint com listas padronizadas:
   - `Backlog Sprint`
@@ -36,12 +45,16 @@ Este modelo cria um sistema de acompanhamento e execução de sprint com bots es
 - Todos usam o mesmo contexto documental.
 - Todos seguem o mesmo protocolo de handoff.
 
-## 3) Ferramentas recomendadas
+## 3) Ferramentas recomendadas (modo atual)
+- OpenAI API (ou equivalente) para os bots
+- Trello/Jira para execução manual dos cards (cópia/cola)
+- Google Sheets (opcional) para dashboard de métricas
+- VSCode para organização do repositório de documentação
+
+## Ferramentas opcionais (futuro)
 - Trello + Butler (automação nativa)
 - n8n (orquestração principal)
-- OpenAI API (ou equivalente) para os bots
-- Google Sheets (opcional) para dashboard de métricas
-- Slack/Discord (opcional) para alertas
+- Slack/Discord (alertas automáticos)
 
 ## 4) Modelo de governança (obrigatório)
 ## 4.1 Campos customizados do Trello
@@ -92,50 +105,35 @@ Se qualquer bot reprovar (`Pendente/Bloqueado`), o card não avança.
 - Dev Front: UX, validações de tela, integração API, testes frontend.
 - QA: estratégia e execução de validação final.
 
-## 7) Implementação em 90 minutos (passo a passo)
+## 7) Implementação em 60 minutos (modo manual - ativo)
 ## Passo 1 - Preparar board (15 min)
 1. Criar listas padrão.
 2. Criar custom fields e labels.
 3. Definir template de card com checklists (técnico + QA + Gherkin).
 
-## Passo 2 - Ativar Butler (20 min)
-Crie automações:
-1. Quando card entrar em `Refino`:
-   - adicionar checklist `Validação Documental`.
-   - comentar `Iniciar análise dos bots`.
-2. Quando checklist `Validação Documental` for concluída:
-   - setar `Doc Alinhada=OK`.
-3. Quando card entrar em `QA`:
-   - setar `QA Gate=Bloqueado`.
-4. Quando checklist `QA` concluída:
-   - setar `QA Gate=OK`.
-5. Bloquear avanço para `Done` se `QA Gate != OK`.
+## Passo 2 - Rodar bots e gerar cards (20 min)
+1. Executar o prompt mestre.
+2. Fornecer contexto mínimo do projeto.
+3. Gerar pacote de cards completos com:
+   - descrição detalhada;
+   - checklist técnico;
+   - checklist QA;
+   - critérios Gherkin.
+4. Copiar e colar no board.
 
-## Passo 3 - Orquestrador n8n (35 min)
-1. Criar workflow com gatilho `Trello Card Updated`.
-2. Condição: `lista == Refino`.
-3. Ler card + documentação base (via arquivos/URL).
-4. Chamar bots na ordem:
-   - Analista -> Arquiteto -> CEO -> QA
-5. Consolidar saídas:
-   - `status_final = OK` apenas se todos `OK`.
-6. Atualizar card:
-   - descrição refinada;
-   - checklists;
-   - campos `Doc Alinhada` e `Critérios Aceite`;
-   - comentário com resumo executivo.
+## Passo 3 - Revisão e gate manual (15 min)
+1. Validar se todos os gates estão cobertos no texto do card.
+2. Marcar `Doc Alinhada=OK` apenas com evidência.
+3. Marcar `QA Gate=OK` somente com critérios completos.
+4. Mover para `Ready`.
 
-## Passo 4 - Alertas (10 min)
-1. Se bot retornar `Bloqueado`, enviar alerta para canal de gestão.
-2. Se card ficar > 24h em `Blocked`, alertar dono + líder.
-
-## Passo 5 - Teste real (10 min)
+## Passo 4 - Teste real (10 min)
 1. Criar card piloto RF real.
-2. Mover para `Refino`.
-3. Validar atualização automática.
-4. Corrigir regra que não disparar.
+2. Rodar bots e gerar card final.
+3. Colar no Trello/Jira.
+4. Validar execução sem ambiguidades.
 
-## 8) Métricas automáticas do sistema de bots
+## 8) Métricas do sistema de bots (modo atual)
 - % de cards aprovados na primeira passagem do refino.
 - Tempo médio `Refino -> Ready`.
 - % de bloqueio por falta de documentação.
@@ -151,10 +149,13 @@ Crie automações:
   - abrir comentário: `Conflito documental identificado`;
   - exigir decisão explícita antes de avançar.
 
-## 10) Entregáveis mínimos da automação
+## 10) Entregáveis mínimos (modo atual)
 - Board configurado.
-- Butler ativo.
-- Workflow n8n ativo.
-- Prompts dos 6 bots carregados.
+- Prompts dos bots carregados.
 - Card piloto executado com sucesso.
 - Dashboard de métricas de sprint atualizado.
+
+## 11) Evolução futura (opcional)
+- Ativar Butler e n8n para reduzir trabalho manual.
+- Automatizar comentários e movimentação de cards.
+- Automatizar gates com bloqueio técnico.
