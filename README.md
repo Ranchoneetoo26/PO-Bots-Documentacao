@@ -9,22 +9,21 @@ Ele gera cards completos para **copiar e colar**.
 ## Resultado que voce recebe
 Ao rodar a CLI, voce recebe:
 - documento mestre;
-- catalogo RF/RNF;
+- documentos separados por bloco (`dvp-e`, `dvs`, `drp`, `dat`, `gdr`);
 - cards detalhados por RF;
 - checklist tecnico e QA por card;
 - criterios Gherkin por card;
 - relatorio de qualidade com score;
 - arquivos CSV/TXT para uso manual.
 
+Cada execucao cria uma pasta nova, para nao misturar com arquivos anteriores.
+
 ## Modo de uso para leigo (clone e usa)
 1. Clone o repositorio.
 2. Abra terminal na pasta.
-3. Instale dependencias.
-4. Rode `pobots init`.
-5. Preencha `project.yaml`.
-6. Rode `pobots generate`.
-7. Rode `pobots validate`.
-8. Rode `pobots export`.
+3. Rode **um comando unico** (`run-all.sh` no Git Bash ou `run-all.ps1` no PowerShell).
+4. Preencha `project.yaml`.
+5. Rode novamente o comando unico para gerar tudo.
 9. Copie e cole no Trello/Jira.
 
 Guia ultra rapido: `INICIAR-AQUI.md`.
@@ -34,37 +33,76 @@ Guia ultra rapido: `INICIAR-AQUI.md`.
 ## Instalacao (Windows PowerShell)
 ```powershell
 cd "c:\Users\Antonio\Desktop\Projeto-CarWash\PO-Bots-Documentacao"
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-pip install -e .
+.\run-all.ps1
+```
+
+## Instalacao (Git Bash)
+```bash
+cd ~/Desktop/Projeto-PO/PO-Bots-Documentacao
+bash ./run-all.sh
 ```
 
 ## Comandos principais
+### 0) Comando unico (recomendado)
+```powershell
+.\run-all.ps1
+```
+```bash
+bash ./run-all.sh
+```
+
+### 0.1) Ambiente manual (somente se precisar)
+```powershell
+$env:PYTHONPATH=(Resolve-Path .\src).Path
+.\.venv\Scripts\python.exe -m pobots.cli doctor
+```
+```bash
+export PYTHONPATH="$(pwd)/src:$PYTHONPATH"
+python -m pobots.cli doctor
+```
+
 ### 1) Criar arquivo base do projeto
 ```powershell
-pobots init
+.\.venv\Scripts\python.exe -m pobots.cli init
 ```
 
 ### 2) Gerar documentacao e cards
 ```powershell
-pobots generate
+.\.venv\Scripts\python.exe -m pobots.cli generate
 ```
 
 ### 3) Validar qualidade (score por card)
 ```powershell
-pobots validate
+.\.venv\Scripts\python.exe -m pobots.cli validate
 ```
 
 ### 4) Exportar para operacao manual
 ```powershell
-pobots export
+.\.venv\Scripts\python.exe -m pobots.cli export
 ```
 
 ### 5) Diagnostico rapido
 ```powershell
-pobots doctor
+.\.venv\Scripts\python.exe -m pobots.cli doctor
 ```
+
+### 6) Pipeline com IA + token do cliente
+```powershell
+$env:POBOTS_API_TOKEN="SEU_TOKEN_AQUI"
+.\.venv\Scripts\python.exe -m pobots.cli ai-generate "Task do cliente: criar fluxo de cadastro e agendamento"
+```
+```bash
+export POBOTS_API_TOKEN="SEU_TOKEN_AQUI"
+python -m pobots.cli ai-generate "Task do cliente: criar fluxo de cadastro e agendamento"
+```
+
+Esse comando executa o fluxo:
+- cliente informa task;
+- IA faz perguntas de detalhamento;
+- cliente responde (ou deixa IA decidir);
+- IA combina a task com nossos prompts oficiais;
+- IA gera `project.yaml`;
+- sistema gera DVP-E, DVS, DRP, DAT, GDR e backlog completo.
 
 ---
 
@@ -94,15 +132,17 @@ Quanto melhor o `project.yaml`, melhor a qualidade final dos cards.
 ---
 
 ## Saida gerada em dist/
-- `documento-mestre.md`
-- `catalogo-rf-rnf.md`
-- `cards-trello.md`
-- `cards.json`
-- `prompt-ia-copiar-colar.md`
-- `qualidade-validacao.md`
-- `qualidade-validacao.json`
-- `cards-trello.csv`
-- `cards-copy-paste.txt`
+- `dist/gerado-<projeto>-<timestamp>/documento-mestre.md`
+- `dist/gerado-<projeto>-<timestamp>/01-dvp-e/dvp-e.md`
+- `dist/gerado-<projeto>-<timestamp>/02-dvs/dvs.md`
+- `dist/gerado-<projeto>-<timestamp>/03-drp/drp.md`
+- `dist/gerado-<projeto>-<timestamp>/04-dat/dat.md`
+- `dist/gerado-<projeto>-<timestamp>/05-gdr/gdr.md`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-trello.md`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/cards.json`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/qualidade-validacao.md`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-trello.csv`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-copy-paste.txt`
 
 ## Como usar no Trello/Jira
 1. Abra seu board.
@@ -132,11 +172,23 @@ Validacao considera:
 ### O sistema publica no Trello automaticamente?
 Nao. Ele gera material pronto para copiar e colar.
 
+### Deu erro `pobots: command not found`. E agora?
+Use `python -m pobots.cli ...` no lugar de `pobots ...`, ou rode diretamente:
+```powershell
+.\run-all.ps1
+```
+```bash
+bash ./run-all.sh
+```
+Esses scripts nao dependem do `PATH` do comando `pobots`.
+
 ### Posso usar em qualquer tipo de projeto?
 Sim. O framework e universal e orientado por documentos base.
 
 ### Posso incluir IA no fluxo?
-Sim. Use o arquivo `dist/prompt-ia-copiar-colar.md` para acelerar refinamento.
+Sim. Voce pode usar:
+- `python -m pobots.cli ai-generate "sua task"` para pipeline automatizado com token.
+- `dist/.../06-backlog/prompt-ia-copiar-colar.md` para refinamento manual.
 
 ---
 

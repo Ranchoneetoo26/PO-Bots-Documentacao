@@ -8,17 +8,19 @@ Regra fixa: sem envio automatico para Trello/Jira. O sistema gera tudo para copi
 cd "c:\Users\Antonio\Desktop\Projeto-CarWash\PO-Bots-Documentacao"
 ```
 
-## 2) Criar ambiente Python e instalar dependencias
+## 2) Rodar em comando unico (recomendado)
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-pip install -e .
+.\run-all.ps1
 ```
 
-## 3) Criar arquivo base do projeto
+Se estiver usando Git Bash:
+```bash
+bash ./run-all.sh
+```
+
+## 3) Criar arquivo base do projeto (opcional manual)
 ```powershell
-pobots init
+python -m pobots.cli init
 ```
 
 ## 4) Editar o arquivo project.yaml
@@ -26,19 +28,32 @@ Preencha nome do projeto, objetivo, RF, RNF e regras.
 
 ## 5) Gerar artefatos
 ```powershell
-pobots generate
-pobots validate
-pobots export
+python -m pobots.cli generate
+python -m pobots.cli validate
+python -m pobots.cli export
+```
+
+Se quiser gerar com IA + token do cliente:
+```powershell
+$env:POBOTS_API_TOKEN="SEU_TOKEN"
+$env:PYTHONPATH=(Resolve-Path .\src).Path
+.\.venv\Scripts\python.exe -m pobots.cli ai-generate "Task do cliente"
 ```
 
 ## 6) Usar resultado
-Arquivos gerados em `dist/`:
-- `documento-mestre.md`
-- `catalogo-rf-rnf.md`
-- `cards-trello.md`
-- `cards.json`
-- `qualidade-validacao.md`
-- `cards-trello.csv`
-- `cards-copy-paste.txt`
+Arquivos gerados em uma pasta nova por execucao:
+- `dist/gerado-<projeto>-<timestamp>/documento-mestre.md`
+- `dist/gerado-<projeto>-<timestamp>/01-dvp-e/dvp-e.md`
+- `dist/gerado-<projeto>-<timestamp>/02-dvs/dvs.md`
+- `dist/gerado-<projeto>-<timestamp>/03-drp/drp.md`
+- `dist/gerado-<projeto>-<timestamp>/04-dat/dat.md`
+- `dist/gerado-<projeto>-<timestamp>/05-gdr/gdr.md`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-trello.md`
+- `dist/gerado-<projeto>-<timestamp>/06-backlog/cards-copy-paste.txt`
 
 Agora e so copiar e colar os cards no Trello/Jira.
+
+## Se aparecer "pobots: command not found"
+- Nao tem problema.
+- Use sempre `python -m pobots.cli ...` ou rode `run-all.ps1` / `run-all.sh`.
+- Esse erro acontece quando o terminal nao encontrou o executavel `pobots` no PATH.

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 from typing import List
 
@@ -69,16 +69,133 @@ def build_card(requirement: FunctionalRequirement) -> Card:
     )
 
 
+def _slugify(value: str) -> str:
+    clean = "".join(ch.lower() if ch.isalnum() else "-" for ch in value.strip())
+    while "--" in clean:
+        clean = clean.replace("--", "-")
+    return clean.strip("-") or "projeto"
+
+
+def _build_run_dir(dist_dir: Path, project_name: str) -> Path:
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    folder = f"gerado-{_slugify(project_name)}-{stamp}"
+    run_dir = dist_dir / folder
+    ensure_dir(run_dir)
+    return run_dir
+
+
+def render_dvp_e(data: ProjectDefinition) -> str:
+    project = data.project
+    return f"""# DVP-E - {project.name}
+
+## Problema e objetivo
+- Objetivo principal: {project.objective}
+- Publico impactado: {project.audience}
+- Prazo alvo: {project.deadline}
+
+## Escopo inicial
+- Stack de referencia: {", ".join(project.stack) if project.stack else "(nao informado)"}
+- Restricoes:
+{bullets(project.constraints)}
+
+## Hipoteses
+{bullets(project.assumptions)}
+"""
+
+
+def render_dvs(data: ProjectDefinition) -> str:
+    project = data.project
+    return f"""# DVS - {project.name}
+
+## Viabilidade tecnica
+- Stack prevista: {", ".join(project.stack) if project.stack else "(nao informado)"}
+- Dependencias principais: IA + processo manual de backlog.
+
+## Viabilidade operacional
+- Operacao do backlog: copia/cola no Trello/Jira (sem automacao de envio).
+- Equipe alvo: produto, engenharia e QA.
+
+## Riscos e mitigacao
+- Risco: ambiguidade em RF.
+  - Mitigacao: checklist tecnico + QA + Gherkin por RF.
+- Risco: baixa qualidade de entrada.
+  - Mitigacao: validar e revisar `project.yaml` antes da geracao.
+"""
+
+
+def render_drp(data: ProjectDefinition) -> str:
+    parts: list[str] = [f"# DRP - {data.project.name}", "", "## Requisitos Funcionais (RF)"]
+    if not data.functional_requirements:
+        parts.append("- (sem RF)")
+    for rf in data.functional_requirements:
+        parts.extend(
+            [
+                f"### {rf.id} - {rf.title}",
+                f"Objetivo: {rf.description}",
+                "Regras de negocio:",
+                bullets(rf.business_rules),
+                "Criterios de aceite base:",
+                bullets(rf.acceptance_criteria),
+                "Fora de escopo:",
+                bullets(rf.out_of_scope),
+                "",
+            ]
+        )
+    parts.append("## Requisitos Nao Funcionais (RNF)")
+    if not data.non_functional_requirements:
+        parts.append("- (sem RNF)")
+    for rnf in data.non_functional_requirements:
+        parts.append(f"- {rnf.id} - {rnf.title}: {rnf.description}")
+    return "\n".join(parts)
+
+
+def render_dat(data: ProjectDefinition) -> str:
+    project = data.project
+    return f"""# DAT - {project.name}
+
+## Diretrizes de arquitetura
+- Modelo recomendado: camadas (dominio, aplicacao, infraestrutura, interface).
+- Integracao com IA: orquestracao por CLI e prompts estruturados.
+- Operacao: saida em arquivos para copy/paste no backlog.
+
+## Dados e contratos
+- Fonte de entrada: `project.yaml`.
+- Contrato de cards: `cards.json`.
+- Entrega operacional: `cards-trello.md`, `cards-trello.csv`, `cards-copy-paste.txt`.
+
+## Seguranca e observabilidade
+- Nao enviar dados automaticamente para plataformas externas.
+- Registrar outputs versionados por pasta de geracao.
+"""
+
+
+def render_gdr(data: ProjectDefinition) -> str:
+    return f"""# GDR - {data.project.name}
+
+## Rastreabilidade
+- Trilha: problema -> requisito -> regra -> criterio -> card.
+- Cada geracao cria pasta nova separada por documento (DVP-E, DVS, DRP, DAT, GDR).
+
+## Governanca de mudanca
+- Nunca misturar documentos novos com arquivos historicos existentes.
+- Nova rodada de geracao = nova pasta de run.
+
+## Gate de qualidade
+- Score por card:
+  - >=85: OK
+  - 70-84: PENDENTE
+  - <70: BLOQUEADO
+"""
+
+
 def render_document_master(data: ProjectDefinition) -> str:
     project = data.project
     rf_list = "\n".join([f"- {item.id}: {item.title}" for item in data.functional_requirements]) or "- (sem RF)"
-    rnf_list = (
-        "\n".join([f"- {item.id}: {item.title}" for item in data.non_functional_requirements]) or "- (sem RNF)"
-    )
+    rnf_list = "\n".join([f"- {item.id}: {item.title}" for item in data.non_functional_requirements]) or "- (sem RNF)"
 
-    return f"""# Documento Mestre - {project.name}
+    return f"""# Documento Mestre Consolidado - {project.name}
 
-Data de geracao: {date.today().isoformat()}
+Data de geracao: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## 1. Visao do projeto
 - Objetivo: {project.objective}
@@ -102,33 +219,6 @@ Data de geracao: {date.today().isoformat()}
 - Este pacote gera cards para copiar e colar no Trello/Jira.
 - Nao existe envio automatico para Trello/Jira.
 """
-
-
-def render_rf_rnf(data: ProjectDefinition) -> str:
-    parts: list[str] = [f"# Catalogo RF/RNF - {data.project.name}", ""]
-    parts.append("## RF")
-    if not data.functional_requirements:
-        parts.append("- (sem RF)")
-    for rf in data.functional_requirements:
-        parts.extend(
-            [
-                f"### {rf.id} - {rf.title}",
-                f"Objetivo: {rf.description}",
-                "Regras de negocio:",
-                bullets(rf.business_rules),
-                "Criterios de aceite base:",
-                bullets(rf.acceptance_criteria),
-                "Fora de escopo:",
-                bullets(rf.out_of_scope),
-                "",
-            ]
-        )
-    parts.append("## RNF")
-    if not data.non_functional_requirements:
-        parts.append("- (sem RNF)")
-    for rnf in data.non_functional_requirements:
-        parts.extend([f"- {rnf.id} - {rnf.title}: {rnf.description}"])
-    return "\n".join(parts)
 
 
 def render_cards_markdown(cards: List[Card], project_name: str) -> str:
@@ -197,7 +287,7 @@ Instrucoes obrigatorias:
 """
 
 
-def generate_artifacts(project_file: Path, dist_dir: Path) -> List[Card]:
+def generate_artifacts(project_file: Path, dist_dir: Path) -> tuple[List[Card], Path]:
     payload = read_yaml(project_file)
     try:
         project_data = ProjectDefinition.model_validate(payload)
@@ -205,11 +295,25 @@ def generate_artifacts(project_file: Path, dist_dir: Path) -> List[Card]:
         raise ValueError(f"Arquivo de projeto invalido: {exc}") from exc
 
     ensure_dir(dist_dir)
+    run_dir = _build_run_dir(dist_dir, project_data.project.name)
     cards = [build_card(requirement) for requirement in project_data.functional_requirements]
 
-    write_text(dist_dir / "documento-mestre.md", render_document_master(project_data))
-    write_text(dist_dir / "catalogo-rf-rnf.md", render_rf_rnf(project_data))
-    write_text(dist_dir / "cards-trello.md", render_cards_markdown(cards, project_data.project.name))
-    write_text(dist_dir / "prompt-ia-copiar-colar.md", render_prompt_copy_paste(project_data))
-    write_json(dist_dir / "cards.json", [card.model_dump(mode="json") for card in cards])
-    return cards
+    dvp_dir = run_dir / "01-dvp-e"
+    dvs_dir = run_dir / "02-dvs"
+    drp_dir = run_dir / "03-drp"
+    dat_dir = run_dir / "04-dat"
+    gdr_dir = run_dir / "05-gdr"
+    backlog_dir = run_dir / "06-backlog"
+    for folder in [dvp_dir, dvs_dir, drp_dir, dat_dir, gdr_dir, backlog_dir]:
+        ensure_dir(folder)
+
+    write_text(dvp_dir / "dvp-e.md", render_dvp_e(project_data))
+    write_text(dvs_dir / "dvs.md", render_dvs(project_data))
+    write_text(drp_dir / "drp.md", render_drp(project_data))
+    write_text(dat_dir / "dat.md", render_dat(project_data))
+    write_text(gdr_dir / "gdr.md", render_gdr(project_data))
+    write_text(run_dir / "documento-mestre.md", render_document_master(project_data))
+    write_text(backlog_dir / "cards-trello.md", render_cards_markdown(cards, project_data.project.name))
+    write_text(backlog_dir / "prompt-ia-copiar-colar.md", render_prompt_copy_paste(project_data))
+    write_json(backlog_dir / "cards.json", [card.model_dump(mode="json") for card in cards])
+    return cards, run_dir
